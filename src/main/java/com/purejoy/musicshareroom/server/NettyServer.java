@@ -2,25 +2,28 @@ package com.purejoy.musicshareroom.server;
 
 import com.purejoy.musicshareroom.server.handler.NettyServerHandlerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.Future;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 
 /**
  * netty客户端
  */
 @Component
+@Slf4j
 public class NettyServer {
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${netty.port}")
     private Integer nettyPort;
@@ -34,7 +37,7 @@ public class NettyServer {
      */
     private EventLoopGroup workGroup = new NioEventLoopGroup();
 
-    @Autowired
+    @Resource
     private NettyServerHandlerInitializer nettyServerHandlerInitializer;
 
     //netty Channel
@@ -56,13 +59,13 @@ public class NettyServer {
         ChannelFuture future = serverBootstrap.bind().sync();
         if (future.isSuccess()) {
             channel = future.channel();
-            logger.info("[start][Netty Server 启动在 {} 端口]", nettyPort);
+            log.info("[start][Netty Server 启动在 {} 端口]", nettyPort);
         }
     }
 
     @PreDestroy
     public void shutdown(){
-        logger.info("关闭netty 服务器");
+        log.info("关闭netty 服务器");
         if (channel != null){
             channel.close();
         }
@@ -74,6 +77,6 @@ public class NettyServer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        logger.info("netty服务器关闭成功");
+        log.info("netty服务器关闭成功");
     }
 }

@@ -8,9 +8,9 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -18,10 +18,10 @@ public class NettyServerHandlerInitializer extends ChannelInitializer<Channel> {
 
     private static final Integer READ_TIME_OUT = 3* 60;
 
-    @Autowired
+    @Resource
     private WebSocketServerHandler webSocketServerHandler;
 
-    @Autowired
+    @Resource
     private NettyServerHandler nettyServerHandler;
 
     @Override

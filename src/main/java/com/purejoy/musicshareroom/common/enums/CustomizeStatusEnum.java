@@ -28,7 +28,9 @@ public enum CustomizeStatusEnum {
 
     NOTHING_TO_SAVE(2005,"无需保存"),
 
-    UPLOAD_ERROR(3001,"上传失败");
+    UPLOAD_ERROR(3001,"上传失败"),
+
+    ERROR_MESSAGE_TYPE(4001, "错误的信息类型，仅支持文本格式" );
 
     private Integer statusCode;
     private String msg;
