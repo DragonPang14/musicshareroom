@@ -1,9 +1,9 @@
 package com.purejoy.musicshareroom.server.handler;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.purejoy.musicshareroom.common.dto.ResultDto;
 import com.purejoy.musicshareroom.common.enums.CustomizeStatusEnum;
+import com.purejoy.musicshareroom.utils.ChatChannelUtils;
 import com.purejoy.musicshareroom.utils.Constant;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -45,7 +45,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
             return;
         }
 
-
+        String requestText = ((TextWebSocketFrame) webSocketFrame).text();
+        log.info("服务端收到的新信息{}{}",channelHandlerContext.channel().id().asLongText(),requestText);
 
 
     }
@@ -61,6 +62,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
     private void sendErrorMessage(ChannelHandlerContext channelHandlerContext, CustomizeStatusEnum statusEnum){
         ResultDto<Object> errorResult = ResultDto.errorOf(statusEnum);
         String errorMessage = JSONObject.toJSONString(errorResult);
-        channelHandlerContext.channel().writeAndFlush(new TextWebSocketFrame(errorMessage));
+        ChatChannelUtils.sendMessage(channelHandlerContext,errorMessage);
     }
 }
