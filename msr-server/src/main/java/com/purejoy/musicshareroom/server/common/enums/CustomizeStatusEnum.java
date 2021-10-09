@@ -1,4 +1,4 @@
-package com.purejoy.musicshareroom.common.enums;
+package com.purejoy.musicshareroom.server.common.enums;
 
 public enum CustomizeStatusEnum {
 

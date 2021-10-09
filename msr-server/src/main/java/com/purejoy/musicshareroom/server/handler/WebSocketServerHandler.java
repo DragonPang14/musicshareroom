@@ -1,10 +1,10 @@
 package com.purejoy.musicshareroom.server.handler;
 
 import com.alibaba.fastjson.JSONObject;
-import com.purejoy.musicshareroom.common.dto.ResultDto;
-import com.purejoy.musicshareroom.common.enums.CustomizeStatusEnum;
-import com.purejoy.musicshareroom.utils.ChatChannelUtils;
-import com.purejoy.musicshareroom.utils.Constant;
+import com.purejoy.musicshareroom.server.common.dto.ResultDto;
+import com.purejoy.musicshareroom.server.common.enums.CustomizeStatusEnum;
+import com.purejoy.musicshareroom.server.utils.ChatChannelUtils;
+import com.purejoy.musicshareroom.server.utils.Constant;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

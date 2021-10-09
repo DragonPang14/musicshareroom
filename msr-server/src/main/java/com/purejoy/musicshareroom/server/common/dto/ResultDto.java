@@ -1,6 +1,6 @@
-package com.purejoy.musicshareroom.common.dto;
+package com.purejoy.musicshareroom.server.common.dto;
 
-import com.purejoy.musicshareroom.common.enums.CustomizeStatusEnum;
+import com.purejoy.musicshareroom.server.common.enums.CustomizeStatusEnum;
 import lombok.Data;
 
 @Data

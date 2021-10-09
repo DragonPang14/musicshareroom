@@ -1,4 +1,4 @@
-package com.purejoy.musicshareroom.utils;
+package com.purejoy.musicshareroom.server.utils;
 
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 

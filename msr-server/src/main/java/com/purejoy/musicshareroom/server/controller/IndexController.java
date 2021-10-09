@@ -1,6 +1,6 @@
 package com.purejoy.musicshareroom.server.controller;
 
-import com.purejoy.musicshareroom.common.dto.ResultDto;
+import com.purejoy.musicshareroom.server.common.dto.ResultDto;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
