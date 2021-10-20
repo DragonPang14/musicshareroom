@@ -5,15 +5,21 @@ import com.purejoy.musicshareroom.server.common.dto.ResultDto;
 import com.purejoy.musicshareroom.server.common.enums.CustomizeStatusEnum;
 import com.purejoy.musicshareroom.server.utils.ChatChannelUtils;
 import com.purejoy.musicshareroom.server.utils.Constant;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.net.SocketAddress;
 
 @Component
 @ChannelHandler.Sharable
@@ -23,6 +29,34 @@ import org.springframework.stereotype.Component;
  */
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
+    private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+
+    /**
+     * @author：Pang
+     * @desc: while user join groupChat
+     * @date: 2021/10/20
+     * @param: [channelHandlerContext]
+     * @return: void
+     **/
+    @Override
+    public void handlerAdded(ChannelHandlerContext channelHandlerContext){
+        Channel channel = channelHandlerContext.channel();
+        channelGroup.writeAndFlush("welcome new friends:" + channel.remoteAddress());
+        channelGroup.add(channel);
+    }
+
+    /**
+     * @author：Pang
+     * @desc: while user exit groupChat
+     * @date: 2021/10/20
+     * @param: [channelHandlerContext]
+     * @return: void
+     **/
+    @Override
+    public void handlerRemoved(ChannelHandlerContext channelHandlerContext) throws Exception {
+        Channel channel = channelHandlerContext.channel();
+        channelGroup.writeAndFlush(channel.remoteAddress() + " user exit ");
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, WebSocketFrame webSocketFrame) throws Exception {
