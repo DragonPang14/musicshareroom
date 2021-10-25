@@ -31,56 +31,46 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
 
     private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    /**
-     * @author：Pang
-     * @desc: while user join groupChat
-     * @date: 2021/10/20
-     * @param: [channelHandlerContext]
-     * @return: void
-     **/
     @Override
-    public void handlerAdded(ChannelHandlerContext channelHandlerContext){
-        Channel channel = channelHandlerContext.channel();
-        channelGroup.writeAndFlush("welcome new friends:" + channel.remoteAddress());
+    public void channelActive(ChannelHandlerContext ctx){
+        Channel channel = ctx.channel();
+        log.info("welcome new friends on channelActive:{}",channel.remoteAddress());
         channelGroup.add(channel);
     }
 
-    /**
-     * @author：Pang
-     * @desc: while user exit groupChat
-     * @date: 2021/10/20
-     * @param: [channelHandlerContext]
-     * @return: void
-     **/
     @Override
-    public void handlerRemoved(ChannelHandlerContext channelHandlerContext) throws Exception {
-        Channel channel = channelHandlerContext.channel();
-        channelGroup.writeAndFlush(channel.remoteAddress() + " user exit ");
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        log.info("goodbye friends on channelInactive:{}",ctx.channel().remoteAddress());
+        channelGroup.remove(ctx.channel());
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, WebSocketFrame webSocketFrame) throws Exception {
-        handlerWebSocketFrame(channelHandlerContext,webSocketFrame);
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.error("异常信息抛出:{},异常channel,{}",cause.getLocalizedMessage(),ctx.channel().id());
     }
 
-    private void handlerWebSocketFrame(ChannelHandlerContext channelHandlerContext, WebSocketFrame webSocketFrame) {
-        System.out.printf(channelHandlerContext.channel().id().asLongText());
-        log.info(channelHandlerContext.channel().id().asLongText());
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame webSocketFrame) throws Exception {
+        handlerWebSocketFrame(ctx,webSocketFrame);
+    }
+
+    private void handlerWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame webSocketFrame) {
+        log.info(ctx.channel().id().asLongText());
         //关闭连接
         if (webSocketFrame instanceof CloseWebSocketFrame){
-            WebSocketServerHandshaker handshaker = Constant.webSocketHandshakerMap.get(channelHandlerContext.channel().id().asLongText());
-            handshaker.close(channelHandlerContext.channel(),(CloseWebSocketFrame) webSocketFrame.retain());
+            WebSocketServerHandshaker handshaker = Constant.webSocketHandshakerMap.get(ctx.channel().id().asLongText());
+            handshaker.close(ctx.channel(),(CloseWebSocketFrame) webSocketFrame.retain());
             return;
         }
 
         //信息类型不为文本
         if (!(webSocketFrame instanceof TextWebSocketFrame)){
-            sendErrorMessage(channelHandlerContext, CustomizeStatusEnum.ERROR_MESSAGE_TYPE);
+            sendErrorMessage(ctx, CustomizeStatusEnum.ERROR_MESSAGE_TYPE);
             return;
         }
 
         String requestText = ((TextWebSocketFrame) webSocketFrame).text();
-        log.info("服务端收到的新信息{}{}",channelHandlerContext.channel().id().asLongText(),requestText);
+        log.info("服务端收到的新信息{}{}",ctx.channel().id().asLongText(),requestText);
 
 
     }
@@ -90,12 +80,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
      * @author：Pang
      * @desc: 发送错误信息
      * @date: 2021/9/26
-     * @param: [channelHandlerContext, statusEnum]
+     * @param: [ctx, statusEnum]
      * @return: void
      **/
-    private void sendErrorMessage(ChannelHandlerContext channelHandlerContext, CustomizeStatusEnum statusEnum){
+    private void sendErrorMessage(ChannelHandlerContext ctx, CustomizeStatusEnum statusEnum){
         ResultDto<Object> errorResult = ResultDto.errorOf(statusEnum);
         String errorMessage = JSONObject.toJSONString(errorResult);
-        ChatChannelUtils.sendMessage(channelHandlerContext,errorMessage);
+        ChatChannelUtils.sendMessage(ctx,errorMessage);
     }
 }
